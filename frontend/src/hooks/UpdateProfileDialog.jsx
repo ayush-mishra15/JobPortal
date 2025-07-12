@@ -5,10 +5,10 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle
-} from './ui/dialog';
-import { Label } from './ui/label';
-import { Input } from './ui/input';
-import { Button } from './ui/button';
+} from '../components/ui/dialog';
+import { Label } from '../components/ui/label';
+import { Input } from '../components/ui/input';
+import { Button } from '../components/ui/button';
 import { Loader2 } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';

@@ -15,6 +15,14 @@ export const register = async (req, res) => {
       });
     }
 
+    // ✅ Check if profile image is present
+    if (!req.file) {
+      return res.status(400).json({
+        message: "Profile image is required",
+        success: false,
+      });
+    }
+
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({
@@ -23,13 +31,10 @@ export const register = async (req, res) => {
       });
     }
 
-    let profilePhotoUrl = "";
-
-    if (req.file) {
-      const fileUri = getDataUri(req.file);
-      const cloudUpload = await cloudinary.uploader.upload(fileUri.content);
-      profilePhotoUrl = cloudUpload.secure_url;
-    }
+    // ✅ Upload to Cloudinary
+    const fileUri = getDataUri(req.file);
+    const cloudUpload = await cloudinary.uploader.upload(fileUri.content);
+    const profilePhotoUrl = cloudUpload.secure_url;
 
     const hashedPassword = await bcrypt.hash(password, 10);
 

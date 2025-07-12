@@ -16,7 +16,7 @@ const Job = ({ job }) => {
   };
 
   return (
-    <div className="rounded-xl shadow-md bg-white border border-gray-100 w-full max-w-sm sm:max-w-md mx-auto p-4 transition-all hover:shadow-xl">
+    <div className="rounded-xl shadow-md bg-white border border-gray-200 w-full max-w-sm sm:max-w-md mx-auto p-4 transition-all hover:shadow-xl">
       {/* Top Info */}
       <div className="flex items-center justify-between text-sm text-gray-500 mb-2">
         <p>

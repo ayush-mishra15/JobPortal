@@ -10,7 +10,9 @@ import { USER_API_END_POINT } from '@/utils/constant';
 import { toast } from 'sonner';
 import { useDispatch, useSelector } from 'react-redux';
 import { setLoading } from '@/redux/authSlice';
-import { Loader2 } from 'lucide-react';
+import {
+  Loader2, Mail, Lock, User, Phone, UploadCloud, UserPlus,
+} from 'lucide-react';
 
 const Signup = () => {
   const [input, setInput] = useState({
@@ -19,45 +21,50 @@ const Signup = () => {
     phoneNumber: '',
     password: '',
     role: '',
-    file: ''
   });
+  const [file, setFile] = useState(null);
 
-  const { loading, user } = useSelector(store => store.auth);
+  const { loading, user } = useSelector((store) => store.auth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const changeEventHandler = e => {
+  const changeEventHandler = (e) => {
     setInput({ ...input, [e.target.name]: e.target.value });
   };
 
-  const changeFileHandler = e => {
-    setInput({ ...input, file: e.target.files?.[0] });
+  const changeFileHandler = (e) => {
+    setFile(e.target.files?.[0] || null);
   };
 
-  const submitHandler = async e => {
+  const submitHandler = async (e) => {
     e.preventDefault();
+
+      if (!file) {
+      toast.error("Profile image is required");
+      return;
+    }
+    
     const formData = new FormData();
-    formData.append('fullname', input.fullname);
-    formData.append('email', input.email);
-    formData.append('phoneNumber', input.phoneNumber);
-    formData.append('password', input.password);
-    formData.append('role', input.role);
-    if (input.file) {
-      formData.append('file', input.file);
+    for (const key in input) {
+      formData.append(key, input[key]);
+    }
+    if (file) {
+      formData.append('file', file);
     }
 
     try {
       dispatch(setLoading(true));
       const res = await axios.post(`${USER_API_END_POINT}/register`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
-        withCredentials: true
+        withCredentials: true,
       });
+
       if (res.data.success) {
-        navigate('/login');
         toast.success(res.data.message);
+        navigate('/login');
       }
     } catch (error) {
-      console.log(error);
+      console.error("Signup error:", error);
       toast.error(error.response?.data?.message || 'Something went wrong');
     } finally {
       dispatch(setLoading(false));
@@ -65,102 +72,112 @@ const Signup = () => {
   };
 
   useEffect(() => {
-    if (user) {
-      navigate('/');
-    }
-  }, []);
+    if (user) navigate('/');
+  }, [user]);
 
   return (
     <div>
       <Navbar />
-      <div className="flex items-center justify-center px-4 py-10">
+      <div className="flex items-center justify-center bg-gray-50 px-4 py-12">
         <form
           onSubmit={submitHandler}
-          className="w-full sm:w-3/4 md:w-2/3 lg:w-1/2 border border-gray-200 rounded-md p-6"
+          className="w-full sm:w-3/4 lg:w-1/2 border border-gray-200 rounded-xl p-8 shadow-md bg-white"
         >
-          <h1 className="font-bold text-xl mb-5 text-center">Sign Up</h1>
+          <h1 className="font-bold text-3xl mb-6 text-center">Create an Account</h1>
 
-          <div className="my-2">
-            <Label>Full Name</Label>
+          {/* Full Name */}
+          <div className="my-3">
+            <Label className="flex items-center mb-1 gap-2">
+              <User size={16} />
+              Full Name
+            </Label>
             <Input
               type="text"
-              value={input.fullname}
               name="fullname"
+              value={input.fullname}
               onChange={changeEventHandler}
               placeholder="Enter your full name"
             />
           </div>
 
-          <div className="my-2">
-            <Label>Email</Label>
+          {/* Email */}
+          <div className="my-3">
+            <Label className="flex items-center mb-1 gap-2">
+              <Mail size={16} />
+              Email
+            </Label>
             <Input
               type="email"
-              value={input.email}
               name="email"
+              value={input.email}
               onChange={changeEventHandler}
               placeholder="Enter your email address"
             />
           </div>
 
-          <div className="my-2">
-            <Label>Phone Number</Label>
+          {/* Phone Number */}
+          <div className="my-3">
+            <Label className="flex items-center mb-1 gap-2">
+              <Phone size={16} />
+              Phone Number
+            </Label>
             <Input
               type="text"
-              value={input.phoneNumber}
               name="phoneNumber"
+              value={input.phoneNumber}
               onChange={changeEventHandler}
               placeholder="Enter your phone number"
             />
           </div>
 
-          <div className="my-2">
-            <Label>Password</Label>
+          {/* Password */}
+          <div className="my-3">
+            <Label className="flex items-center mb-1 gap-2">
+              <Lock size={16} />
+              Password
+            </Label>
             <Input
               type="password"
-              value={input.password}
               name="password"
+              value={input.password}
               onChange={changeEventHandler}
               placeholder="Create a strong password"
             />
           </div>
 
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 my-4">
+          {/* Role & File Upload */}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 my-5">
             <RadioGroup className="flex flex-wrap gap-4">
-              <div className="flex items-center space-x-2">
-                <Input
-                  type="radio"
-                  name="role"
-                  value="student"
-                  checked={input.role === 'student'}
-                  onChange={changeEventHandler}
-                  className="cursor-pointer"
-                />
-                <Label htmlFor="r1">Student</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Input
-                  type="radio"
-                  name="role"
-                  value="recruiter"
-                  checked={input.role === 'recruiter'}
-                  onChange={changeEventHandler}
-                  className="cursor-pointer"
-                />
-                <Label htmlFor="r2">Recruiter</Label>
-              </div>
+              {['student', 'recruiter'].map((r) => (
+                <div key={r} className="flex items-center space-x-2">
+                  <Input
+                    type="radio"
+                    name="role"
+                    value={r}
+                    checked={input.role === r}
+                    onChange={changeEventHandler}
+                    className="cursor-pointer"
+                  />
+                  <Label className="cursor-pointer capitalize">{r}</Label>
+                </div>
+              ))}
             </RadioGroup>
 
             <div className="flex items-center gap-2">
-              <Label>Profile</Label>
+              <Label className="flex items-center gap-1">
+                <UploadCloud size={16} />
+                Profile
+              </Label>
               <Input
                 accept="image/*"
                 type="file"
                 onChange={changeFileHandler}
-                className="cursor-pointer"
+                className="file:mr-4 file:py-1 file:px-3 file:rounded-md file:border-0 file:bg-blue-50 file:text-sm file:font-semibold file:text-blue-600 hover:file:bg-blue-100"
               />
             </div>
           </div>
 
+          {/* Submit Button */}
           {loading ? (
             <Button className="w-full my-4" disabled>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -168,6 +185,7 @@ const Signup = () => {
             </Button>
           ) : (
             <Button type="submit" className="w-full my-4">
+              <UserPlus size={18} className="mr-2" />
               Signup
             </Button>
           )}

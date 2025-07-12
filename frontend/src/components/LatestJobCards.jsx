@@ -8,7 +8,7 @@ const LatestJobCards = ({ job }) => {
   return (
     <div
       onClick={() => navigate(`/description/${job._id}`)}
-      className="p-4 sm:p-5 rounded-md shadow-xl bg-white border border-gray-100 cursor-pointer transition-all hover:shadow-2xl"
+      className="p-4 sm:p-5 rounded-md shadow-xl bg-white border border-gray-200 cursor-pointer transition-all hover:shadow-2xl"
     >
       {/* Company Info */}
       <div>

@@ -28,7 +28,7 @@ const Navbar = () => {
       }
     } catch (error) {
       console.log(error);
-      toast.error(error.response.data.message);
+      toast.error(error.response?.data?.message || 'Logout failed');
     }
   };
 
@@ -38,7 +38,7 @@ const Navbar = () => {
         {/* Logo */}
         <Link
           to="/"
-          className="text-xl sm:text-2xl font-bold text-gray-900  w-full md:w-fit"
+          className="text-xl sm:text-2xl font-bold text-gray-900 w-full md:w-fit"
         >
           Job<span className="text-[#2563EB]">Portal</span>
         </Link>
@@ -66,7 +66,7 @@ const Navbar = () => {
                 <Button variant="outline" className="h-8 px-3 text-sm">Login</Button>
               </Link>
               <Link to="/signup">
-                <Button className="bg-[#2563EB] hover:bg-[#1D4ED8] h-8 px-4 text-sm">Signup</Button>
+                <Button className="bg-[#2563EB] hover:bg-[#1D4ED8] h-8 px-4 text-sm text-white">Signup</Button>
               </Link>
             </div>
           ) : (
@@ -94,7 +94,11 @@ const Navbar = () => {
                       <span className='text-gray-800 font-semibold'>View Profile</span>
                     </Link>
                   )}
-                  <Button onClick={logoutHandler} variant="link" className="flex justify-start gap-2 text-gray-800 p-0">
+                  <Button
+                    onClick={logoutHandler}
+                    variant="link"
+                    className="flex justify-start gap-2 text-gray-800 p-0"
+                  >
                     <LogOut className="h-4 w-4" />
                     Logout
                   </Button>
@@ -106,7 +110,10 @@ const Navbar = () => {
 
         {/* Mobile Menu Toggle */}
         <div className="md:hidden absolute right-4">
-          <Menu className="h-6 w-6 cursor-pointer text-gray-800" onClick={() => setMobileMenuOpen(!mobileMenuOpen)} />
+          <Menu
+            className="h-6 w-6 cursor-pointer text-gray-800"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          />
         </div>
       </div>
 
@@ -128,27 +135,48 @@ const Navbar = () => {
             )}
           </ul>
 
-          <div className="mt-4 flex flex-col gap-1 text-sm text-gray-700">
-            {user?.role === 'student' && (
-                <Link to="/profile">
-                <Button
+          <div className="mt-4 flex flex-col gap-2 text-sm text-gray-700">
+            {!user ? (
+              <>
+                <Link to="/login">
+                  <Button
                     variant="outline"
-                    className="w-full h-8 px-3 py-1 text-sm flex justify-center gap-2"
-                >
-                    <User2 className="h-4 w-4" />
-                    View Profile
-                </Button>
+                    className="w-full h-8 px-3 py-1 text-sm"
+                  >
+                    Login
+                  </Button>
                 </Link>
+                <Link to="/signup">
+                  <Button
+                    className=" w-full h-8 px-3 py-1 text-sm text-white"
+                  >
+                    Signup
+                  </Button>
+                </Link>
+              </>
+            ) : (
+              <>
+                {user?.role === 'student' && (
+                  <Link to="/profile">
+                    <Button
+                      variant="outline"
+                      className="w-full h-8 px-3 py-1 text-sm flex justify-center gap-2"
+                    >
+                      <User2 className="h-4 w-4" />
+                      View Profile
+                    </Button>
+                  </Link>
+                )}
+                <Button
+                  onClick={logoutHandler}
+                  className="w-full h-8 px-3 py-1 text-sm bg-black hover:bg-gray-800 flex items-center justify-center gap-2"
+                >
+                  <LogOut className="h-4 w-4" />
+                  Logout
+                </Button>
+              </>
             )}
-            <Button
-                onClick={logoutHandler}
-                className="w-full h-8 px-3 py-1 text-sm bg-black hover:bg-gray-800 flex items-center justify-center gap-2"
-            >
-                <LogOut className="h-4 w-4" />
-                Logout
-            </Button>
-            </div>
-
+          </div>
         </div>
       )}
     </div>
